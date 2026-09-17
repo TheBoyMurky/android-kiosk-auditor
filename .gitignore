@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+*.egg-info/
+
+# Local reports and generated audit outputs
+kiosk-audit-report.json
+reports/*.json
+reports/*.html
+
+# Android / Gradle build artifacts
+.gradle/
+**/.gradle/
+build/
+**/build/
+local.properties
+*.apk
+*.ap_
+*.aab
+*.aar
+*.dex
+*.class
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

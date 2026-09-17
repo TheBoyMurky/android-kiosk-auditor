@@ -1,0 +1,40 @@
+rules:
+  - id: KIOSK-001
+    title: Lock task mode is not enforced
+    severity: critical
+    description: The application can leave the intended kiosk experience.
+    remediation: Configure device-owner policy and enforce lock task mode.
+    references:
+      - https://developer.android.com/work/dpc/dedicated-devices/lock-task-mode
+
+  - id: KIOSK-002
+    title: Exported component may expose kiosk functionality
+    severity: high
+    description: An exported Android component may be reachable by another app.
+    remediation: Disable exporting or protect the component with an appropriate permission.
+    references:
+      - https://developer.android.com/guide/topics/manifest/activity-element#exported
+
+  - id: APK-001
+    title: Application is debuggable
+    severity: high
+    description: The release application enables Android debugging facilities.
+    remediation: Set android:debuggable to false in production builds.
+    references:
+      - https://developer.android.com/privacy-and-security/risks/android-debuggable
+
+  - id: APK-002
+    title: Application data backup is allowed
+    severity: medium
+    description: Application data may be included in backup or device-transfer operations.
+    remediation: Disable backup or define explicit backup and data-extraction rules for sensitive kiosk data.
+    references:
+      - https://developer.android.com/guide/topics/manifest/application-element#allowbackup
+
+  - id: APK-003
+    title: Dangerous Android permission is requested
+    severity: medium
+    description: The application requests a runtime permission that grants access to sensitive data or device capabilities.
+    remediation: Remove the permission when unnecessary and apply least privilege when it is required.
+    references:
+      - https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions

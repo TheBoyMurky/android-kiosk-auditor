@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "android-kiosk-auditor"
+version = "0.1.0"
+description = "Extensible static and device-side auditing framework for Android kiosk applications"
+requires-python = ">=3.10"
+dependencies = ["androguard>=4.1", "PyYAML>=6.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+include = ["apk_analyzer*", "adb_probe*", "core*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
