@@ -34,6 +34,8 @@ def test_manifest_checks_map_to_rules():
         "KIOSK-002",
     ]
     assert findings[2].evidence["permission"] == "android.permission.CAMERA"
+    assert findings[2].tcc_parameters == ("P03",)
+    assert findings[2].checklist_ids == ("APP-04",)
     assert findings[3].evidence["component_name"] == "com.example.kiosk.MainActivity"
     assert findings[4].evidence["has_intent_filter"] is True
 

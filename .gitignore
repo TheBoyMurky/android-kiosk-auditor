@@ -16,6 +16,11 @@ kiosk-audit-report.json
 reports/*.json
 reports/*.html
 
+# Canonical, sanitized evidence used by the TCC demonstration
+!reports/vulnerable-apk-report.json
+!reports/hardened-apk-report.json
+!reports/apk-comparison-report.json
+
 # Android / Gradle build artifacts
 .gradle/
 **/.gradle/

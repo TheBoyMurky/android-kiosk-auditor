@@ -1,35 +1,36 @@
-# APK Static Comparison Report
+# Relatório de comparação estática dos APKs
 
-Generated at: 2026-09-10T23:28:28.903301+00:00
+Gerado em: 2026-11-23T00:03:33.117014+00:00
 
-## Targets
+## Artefatos
 
-- VulnerableKioskApp: `vulnerable-kiosk-app/app/build/outputs/apk/debug/app-debug.apk` / `com.example.vulnerablekiosk`
-- HardenedKioskApp: `hardened-kiosk-app/app/build/outputs/apk/debug/app-debug.apk` / `com.example.hardenedkiosk`
+- VulnerableKioskApp: `vulnerable-kiosk-app/app/build/outputs/apk/debug/app-debug.apk` (`sha256: 88dccd991a6b0e12f1f27ee975f339265068e673be1bcbb085354c47d7a3d812`)
+- HardenedKioskApp: `hardened-kiosk-app/app/build/outputs/apk/debug/app-debug.apk` (`sha256: f09a7c36a8ba4aa49bbc84676ac779b45903db8878bb72fc80dbcd633b2c77dc`)
 
-## Reports
+## Relatórios
 
 - `reports/vulnerable-apk-report.json`
 - `reports/hardened-apk-report.json`
 - `reports/apk-comparison-report.json`
 
-## Main Differences
+## Resultados das regras implementadas
 
-- Vulnerable findings: 13
-- Hardened findings: 0
-- Vulnerable permissions: `android.permission.INTERNET, android.permission.CAMERA, android.permission.ACCESS_FINE_LOCATION, android.permission.RECORD_AUDIO, android.permission.READ_PHONE_STATE, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.RECEIVE_BOOT_COMPLETED`
-- Hardened permissions: `none`
-- Vulnerable cleartext: `True`
-- Hardened cleartext: `False`
-- Vulnerable backup: `True`
-- Hardened backup: `False`
+- Achados no VulnerableKioskApp: 10
+- Achados no HardenedKioskApp: 0
 
-## Layer Summary
+As contagens incluem somente as regras implementadas pelo `ApkAnalyzer` atual.
+Ausência de achados não significa que a aplicação ou o dispositivo estejam
+integralmente seguros.
 
-- Rede e Comunicação: VulnerableKioskApp embeds HTTP endpoints and allows cleartext. HardenedKioskApp embeds only HTTPS demonstration endpoints and blocks cleartext traffic.
-- Aplicação: VulnerableKioskApp contains hardcoded test credentials/tokens and dangerous capability requests. HardenedKioskApp has no detected dangerous permissions and no detected HTTP or prohibited test credential strings.
-- Segurança Física / Modo Kiosk: No ADB/device-policy collection was performed because this run was APK-only. Device posture requires a connected emulator/device.
+## Estados de avaliação
 
-## Tooling Note
+- VulnerableKioskApp: `{"conforme": 0, "nao_conforme": 1, "nao_avaliado": 3, "nao_aplicavel": 0}`
+- HardenedKioskApp: `{"conforme": 1, "nao_conforme": 0, "nao_avaliado": 3, "nao_aplicavel": 0}`
 
-`adb_probe/probe.py` was found, but it was not executed because this run is APK-only. The existing probe also collects device-level state only; it does not currently accept APK path, package name, or output path arguments.
+Somente regras conclusivas podem atribuir `conforme` automaticamente. Regras
+indicativas permanecem `nao_avaliado` até a revisão das evidências contextuais.
+`nao_aplicavel` sempre exige justificativa humana documentada.
+
+## Escopo
+
+Esta comparação cobre somente verificações estáticas implementadas e indicadores de strings DEX. Controles de dispositivo, kiosk, TLS, físicos, dinâmicos e operacionais permanecem não avaliados nesta execução.

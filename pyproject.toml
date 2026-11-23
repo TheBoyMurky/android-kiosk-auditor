@@ -12,6 +12,9 @@ dependencies = ["androguard>=4.1", "PyYAML>=6.0"]
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
 
+[project.scripts]
+android-kiosk-compare = "apk_analyzer.cli:main"
+
 [tool.setuptools.packages.find]
 include = ["apk_analyzer*", "adb_probe*", "core*"]
 

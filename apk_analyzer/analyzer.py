@@ -17,6 +17,13 @@ RULE_ALLOW_BACKUP = "APK-002"
 RULE_DANGEROUS_PERMISSION = "APK-003"
 RULE_EXPORTED_COMPONENT = "KIOSK-002"
 
+IMPLEMENTED_RULE_IDS = (
+    RULE_DEBUGGABLE,
+    RULE_ALLOW_BACKUP,
+    RULE_DANGEROUS_PERMISSION,
+    RULE_EXPORTED_COMPONENT,
+)
+
 COMPONENT_TAGS = ("activity", "activity-alias", "service", "receiver", "provider")
 
 # Android platform permissions whose protection level includes "dangerous".
@@ -85,6 +92,10 @@ class ApkAnalyzer:
         missing = required.difference(self._rules)
         if missing:
             raise ValueError(f"missing analyzer rules: {', '.join(sorted(missing))}")
+
+    def get_rule(self, rule_id: str) -> Rule:
+        """Return one validated rule from the analyzer catalog."""
+        return self._rules[rule_id]
 
     def analyze(self, apk_path: str | Path) -> list[Finding]:
         path = Path(apk_path)
@@ -191,6 +202,8 @@ class ApkAnalyzer:
             evidence=evidence,
             remediation=rule.remediation,
             references=rule.references,
+            tcc_parameters=rule.tcc_parameters,
+            checklist_ids=rule.checklist_ids,
         )
 
     @staticmethod
@@ -223,8 +236,30 @@ class ApkAnalyzer:
                 exported = component.get(f"{ANDROID}exported")
                 explicitly_exported = exported is not None and exported.lower() == "true"
                 implicitly_exported = exported is None and component.find("intent-filter") is not None
-                if explicitly_exported or implicitly_exported:
+                if (
+                    explicitly_exported or implicitly_exported
+                ) and not ApkAnalyzer._is_launcher_activity(component):
                     yield component
+
+    @staticmethod
+    def _is_launcher_activity(component: ElementTree.Element) -> bool:
+        if component.tag not in {"activity", "activity-alias"}:
+            return False
+        for intent_filter in component.findall("intent-filter"):
+            actions = {
+                action.get(f"{ANDROID}name")
+                for action in intent_filter.findall("action")
+            }
+            categories = {
+                category.get(f"{ANDROID}name")
+                for category in intent_filter.findall("category")
+            }
+            if (
+                "android.intent.action.MAIN" in actions
+                and "android.intent.category.LAUNCHER" in categories
+            ):
+                return True
+        return False
 
     @staticmethod
     def _qualified_name(package_name: str, component_name: str) -> str:

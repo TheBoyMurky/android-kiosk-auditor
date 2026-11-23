@@ -25,6 +25,8 @@ class Finding:
     evidence: dict[str, Any] = field(default_factory=dict)
     remediation: str | None = None
     references: tuple[str, ...] = ()
+    tcc_parameters: tuple[str, ...] = ()
+    checklist_ids: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         for field_name in ("rule_id", "title", "source", "description"):
@@ -35,4 +37,6 @@ class Finding:
         data = asdict(self)
         data["severity"] = self.severity.value
         data["references"] = list(self.references)
+        data["tcc_parameters"] = list(self.tcc_parameters)
+        data["checklist_ids"] = list(self.checklist_ids)
         return data

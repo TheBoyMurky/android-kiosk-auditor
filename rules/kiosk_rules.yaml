@@ -4,6 +4,12 @@ rules:
     severity: critical
     description: The application can leave the intended kiosk experience.
     remediation: Configure device-owner policy and enforce lock task mode.
+    tcc_parameters:
+      - P10
+    checklist_ids:
+      - KSK-01
+      - KSK-02
+    evaluation_mode: manual
     references:
       - https://developer.android.com/work/dpc/dedicated-devices/lock-task-mode
 
@@ -12,6 +18,11 @@ rules:
     severity: high
     description: An exported Android component may be reachable by another app.
     remediation: Disable exporting or protect the component with an appropriate permission.
+    tcc_parameters:
+      - P04
+    checklist_ids:
+      - APP-05
+    evaluation_mode: indicator
     references:
       - https://developer.android.com/guide/topics/manifest/activity-element#exported
 
@@ -20,6 +31,11 @@ rules:
     severity: high
     description: The release application enables Android debugging facilities.
     remediation: Set android:debuggable to false in production builds.
+    tcc_parameters:
+      - P01
+    checklist_ids:
+      - APP-01
+    evaluation_mode: conclusive
     references:
       - https://developer.android.com/privacy-and-security/risks/android-debuggable
 
@@ -28,6 +44,11 @@ rules:
     severity: medium
     description: Application data may be included in backup or device-transfer operations.
     remediation: Disable backup or define explicit backup and data-extraction rules for sensitive kiosk data.
+    tcc_parameters:
+      - P02
+    checklist_ids:
+      - APP-02
+    evaluation_mode: indicator
     references:
       - https://developer.android.com/guide/topics/manifest/application-element#allowbackup
 
@@ -36,5 +57,10 @@ rules:
     severity: medium
     description: The application requests a runtime permission that grants access to sensitive data or device capabilities.
     remediation: Remove the permission when unnecessary and apply least privilege when it is required.
+    tcc_parameters:
+      - P03
+    checklist_ids:
+      - APP-04
+    evaluation_mode: indicator
     references:
       - https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions

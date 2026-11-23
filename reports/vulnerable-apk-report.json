@@ -1,0 +1,386 @@
+{
+  "schema_version": "static-apk-report-2.0",
+  "generated_at": "2026-11-23T00:03:33.112421+00:00",
+  "analysis_mode": "reproducible_static_apk_no_adb_device",
+  "target": {
+    "name": "VulnerableKioskApp",
+    "apk_path": "vulnerable-kiosk-app/app/build/outputs/apk/debug/app-debug.apk",
+    "sha256": "88dccd991a6b0e12f1f27ee975f339265068e673be1bcbb085354c47d7a3d812",
+    "size_bytes": 20605,
+    "package_name": "com.example.vulnerablekiosk",
+    "version_code": "1",
+    "version_name": "1.0-lab",
+    "min_sdk": "23",
+    "target_sdk": "28"
+  },
+  "tooling": {
+    "engine": "android-kiosk-auditor",
+    "rules_path": "rules/kiosk_rules.yaml",
+    "external_android_tools_required": false
+  },
+  "manifest_summary": {
+    "debuggable": true,
+    "allow_backup": true,
+    "uses_cleartext_traffic": true,
+    "network_security_config": null,
+    "permissions": [
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.CAMERA",
+      "android.permission.INTERNET",
+      "android.permission.READ_EXTERNAL_STORAGE",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.RECEIVE_BOOT_COMPLETED",
+      "android.permission.RECORD_AUDIO",
+      "android.permission.WRITE_EXTERNAL_STORAGE"
+    ],
+    "components": [
+      {
+        "type": "activity",
+        "name": "com.example.vulnerablekiosk.MainActivity",
+        "exported": true,
+        "has_intent_filter": true
+      },
+      {
+        "type": "activity",
+        "name": "com.example.vulnerablekiosk.AdminActivity",
+        "exported": false,
+        "has_intent_filter": false
+      },
+      {
+        "type": "activity",
+        "name": "com.example.vulnerablekiosk.WebViewActivity",
+        "exported": false,
+        "has_intent_filter": false
+      },
+      {
+        "type": "activity",
+        "name": "com.example.vulnerablekiosk.DiagnosticsActivity",
+        "exported": false,
+        "has_intent_filter": false
+      },
+      {
+        "type": "activity",
+        "name": "com.example.vulnerablekiosk.NetworkDemoActivity",
+        "exported": false,
+        "has_intent_filter": false
+      },
+      {
+        "type": "activity",
+        "name": "com.example.vulnerablekiosk.ExportedDebugActivity",
+        "exported": true,
+        "has_intent_filter": true
+      },
+      {
+        "type": "receiver",
+        "name": "com.example.vulnerablekiosk.DebugReceiver",
+        "exported": true,
+        "has_intent_filter": true
+      }
+    ]
+  },
+  "dex_indicators": {
+    "urls": [
+      "http://10.0.2.2:8080/mock/login",
+      "http://10.0.2.2:8080/mock/payment",
+      "http://10.0.2.2:8080/mock/status",
+      "http://example.com/insecure-api",
+      "http://test-kiosk-api.local/login"
+    ],
+    "credential_markers": [
+      "api_key",
+      "apikey",
+      "password",
+      "secret",
+      "sessiontoken",
+      "token"
+    ]
+  },
+  "summary": {
+    "finding_count": 10,
+    "finding_scope_note": "A contagem inclui somente regras implementadas pelo ApkAnalyzer atual; ausência de achados não comprova segurança completa.",
+    "evaluation_status_counts": {
+      "conforme": 0,
+      "nao_conforme": 1,
+      "nao_avaliado": 3,
+      "nao_aplicavel": 0
+    }
+  },
+  "evaluation_policy": {
+    "statuses": [
+      "conforme",
+      "nao_conforme",
+      "nao_avaliado",
+      "nao_aplicavel"
+    ],
+    "not_applicable_policy": "nao_aplicavel exige justificativa humana documentada e nunca é atribuído automaticamente.",
+    "severity_note": "A severidade é uma classificação inicial de triagem do catálogo, não uma pontuação universal de risco cientificamente validada."
+  },
+  "evaluations": [
+    {
+      "rule_id": "APK-001",
+      "status": "nao_conforme",
+      "mode": "conclusive",
+      "indicator_observed": true,
+      "rationale": "A regra implementada encontrou evidência direta de descumprimento do critério.",
+      "tcc_parameters": [
+        "P01"
+      ],
+      "checklist_ids": [
+        "APP-01"
+      ]
+    },
+    {
+      "rule_id": "APK-002",
+      "status": "nao_avaliado",
+      "mode": "indicator",
+      "indicator_observed": true,
+      "rationale": "Um indicador foi observado, mas a conclusão exige evidência contextual.",
+      "tcc_parameters": [
+        "P02"
+      ],
+      "checklist_ids": [
+        "APP-02"
+      ]
+    },
+    {
+      "rule_id": "APK-003",
+      "status": "nao_avaliado",
+      "mode": "indicator",
+      "indicator_observed": true,
+      "rationale": "Um indicador foi observado, mas a conclusão exige evidência contextual.",
+      "tcc_parameters": [
+        "P03"
+      ],
+      "checklist_ids": [
+        "APP-04"
+      ]
+    },
+    {
+      "rule_id": "KIOSK-002",
+      "status": "nao_avaliado",
+      "mode": "indicator",
+      "indicator_observed": true,
+      "rationale": "Um indicador foi observado, mas a conclusão exige evidência contextual.",
+      "tcc_parameters": [
+        "P04"
+      ],
+      "checklist_ids": [
+        "APP-05"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "rule_id": "APK-001",
+      "title": "Application is debuggable",
+      "severity": "high",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "The release application enables Android debugging facilities.",
+      "evidence": {
+        "attribute": "android:debuggable",
+        "value": true
+      },
+      "remediation": "Set android:debuggable to false in production builds.",
+      "references": [
+        "https://developer.android.com/privacy-and-security/risks/android-debuggable"
+      ],
+      "tcc_parameters": [
+        "P01"
+      ],
+      "checklist_ids": [
+        "APP-01"
+      ]
+    },
+    {
+      "rule_id": "APK-002",
+      "title": "Application data backup is allowed",
+      "severity": "medium",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "Application data may be included in backup or device-transfer operations.",
+      "evidence": {
+        "attribute": "android:allowBackup",
+        "value": true,
+        "effective_value": true,
+        "declared": true
+      },
+      "remediation": "Disable backup or define explicit backup and data-extraction rules for sensitive kiosk data.",
+      "references": [
+        "https://developer.android.com/guide/topics/manifest/application-element#allowbackup"
+      ],
+      "tcc_parameters": [
+        "P02"
+      ],
+      "checklist_ids": [
+        "APP-02"
+      ]
+    },
+    {
+      "rule_id": "APK-003",
+      "title": "Dangerous Android permission is requested",
+      "severity": "medium",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "The application requests a runtime permission that grants access to sensitive data or device capabilities.",
+      "evidence": {
+        "permission": "android.permission.ACCESS_FINE_LOCATION"
+      },
+      "remediation": "Remove the permission when unnecessary and apply least privilege when it is required.",
+      "references": [
+        "https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions"
+      ],
+      "tcc_parameters": [
+        "P03"
+      ],
+      "checklist_ids": [
+        "APP-04"
+      ]
+    },
+    {
+      "rule_id": "APK-003",
+      "title": "Dangerous Android permission is requested",
+      "severity": "medium",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "The application requests a runtime permission that grants access to sensitive data or device capabilities.",
+      "evidence": {
+        "permission": "android.permission.CAMERA"
+      },
+      "remediation": "Remove the permission when unnecessary and apply least privilege when it is required.",
+      "references": [
+        "https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions"
+      ],
+      "tcc_parameters": [
+        "P03"
+      ],
+      "checklist_ids": [
+        "APP-04"
+      ]
+    },
+    {
+      "rule_id": "APK-003",
+      "title": "Dangerous Android permission is requested",
+      "severity": "medium",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "The application requests a runtime permission that grants access to sensitive data or device capabilities.",
+      "evidence": {
+        "permission": "android.permission.READ_EXTERNAL_STORAGE"
+      },
+      "remediation": "Remove the permission when unnecessary and apply least privilege when it is required.",
+      "references": [
+        "https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions"
+      ],
+      "tcc_parameters": [
+        "P03"
+      ],
+      "checklist_ids": [
+        "APP-04"
+      ]
+    },
+    {
+      "rule_id": "APK-003",
+      "title": "Dangerous Android permission is requested",
+      "severity": "medium",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "The application requests a runtime permission that grants access to sensitive data or device capabilities.",
+      "evidence": {
+        "permission": "android.permission.READ_PHONE_STATE"
+      },
+      "remediation": "Remove the permission when unnecessary and apply least privilege when it is required.",
+      "references": [
+        "https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions"
+      ],
+      "tcc_parameters": [
+        "P03"
+      ],
+      "checklist_ids": [
+        "APP-04"
+      ]
+    },
+    {
+      "rule_id": "APK-003",
+      "title": "Dangerous Android permission is requested",
+      "severity": "medium",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "The application requests a runtime permission that grants access to sensitive data or device capabilities.",
+      "evidence": {
+        "permission": "android.permission.RECORD_AUDIO"
+      },
+      "remediation": "Remove the permission when unnecessary and apply least privilege when it is required.",
+      "references": [
+        "https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions"
+      ],
+      "tcc_parameters": [
+        "P03"
+      ],
+      "checklist_ids": [
+        "APP-04"
+      ]
+    },
+    {
+      "rule_id": "APK-003",
+      "title": "Dangerous Android permission is requested",
+      "severity": "medium",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "The application requests a runtime permission that grants access to sensitive data or device capabilities.",
+      "evidence": {
+        "permission": "android.permission.WRITE_EXTERNAL_STORAGE"
+      },
+      "remediation": "Remove the permission when unnecessary and apply least privilege when it is required.",
+      "references": [
+        "https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions"
+      ],
+      "tcc_parameters": [
+        "P03"
+      ],
+      "checklist_ids": [
+        "APP-04"
+      ]
+    },
+    {
+      "rule_id": "KIOSK-002",
+      "title": "Exported component may expose kiosk functionality",
+      "severity": "high",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "An exported Android component may be reachable by another app.",
+      "evidence": {
+        "component_type": "activity",
+        "component_name": "com.example.vulnerablekiosk.ExportedDebugActivity",
+        "exported": "true",
+        "has_intent_filter": true,
+        "permission": null
+      },
+      "remediation": "Disable exporting or protect the component with an appropriate permission.",
+      "references": [
+        "https://developer.android.com/guide/topics/manifest/activity-element#exported"
+      ],
+      "tcc_parameters": [
+        "P04"
+      ],
+      "checklist_ids": [
+        "APP-05"
+      ]
+    },
+    {
+      "rule_id": "KIOSK-002",
+      "title": "Exported component may expose kiosk functionality",
+      "severity": "high",
+      "source": "apk_analyzer:app-debug.apk",
+      "description": "An exported Android component may be reachable by another app.",
+      "evidence": {
+        "component_type": "receiver",
+        "component_name": "com.example.vulnerablekiosk.DebugReceiver",
+        "exported": "true",
+        "has_intent_filter": true,
+        "permission": null
+      },
+      "remediation": "Disable exporting or protect the component with an appropriate permission.",
+      "references": [
+        "https://developer.android.com/guide/topics/manifest/activity-element#exported"
+      ],
+      "tcc_parameters": [
+        "P04"
+      ],
+      "checklist_ids": [
+        "APP-05"
+      ]
+    }
+  ]
+}

@@ -9,6 +9,7 @@ from typing import Any
 import yaml
 
 from .finding import Severity
+from .evaluation import EvaluationMode
 
 
 class RuleLoadError(ValueError):
@@ -23,6 +24,9 @@ class Rule:
     description: str
     remediation: str | None = None
     references: tuple[str, ...] = ()
+    tcc_parameters: tuple[str, ...] = ()
+    checklist_ids: tuple[str, ...] = ()
+    evaluation_mode: EvaluationMode = EvaluationMode.INDICATOR
 
 
 def _required_text(item: dict[str, Any], key: str, index: int) -> str:
@@ -30,6 +34,15 @@ def _required_text(item: dict[str, Any], key: str, index: int) -> str:
     if not isinstance(value, str) or not value.strip():
         raise RuleLoadError(f"rules[{index}].{key} must be a non-empty string")
     return value.strip()
+
+
+def _optional_text_list(item: dict[str, Any], key: str, index: int) -> tuple[str, ...]:
+    values = item.get(key, [])
+    if not isinstance(values, list) or not all(
+        isinstance(value, str) and value.strip() for value in values
+    ):
+        raise RuleLoadError(f"rules[{index}].{key} must be a list of strings")
+    return tuple(value.strip() for value in values)
 
 
 def load_rules(path: str | Path) -> list[Rule]:
@@ -62,12 +75,17 @@ def load_rules(path: str | Path) -> list[Rule]:
                 f"rules[{index}].severity must be one of: {allowed}"
             ) from exc
 
-        references = item.get("references", [])
-        if not isinstance(references, list) or not all(
-            isinstance(reference, str) and reference.strip()
-            for reference in references
-        ):
-            raise RuleLoadError(f"rules[{index}].references must be a list of strings")
+        references = _optional_text_list(item, "references", index)
+        tcc_parameters = _optional_text_list(item, "tcc_parameters", index)
+        checklist_ids = _optional_text_list(item, "checklist_ids", index)
+        evaluation_mode_text = item.get("evaluation_mode", "indicator")
+        try:
+            evaluation_mode = EvaluationMode(evaluation_mode_text)
+        except (TypeError, ValueError) as exc:
+            allowed = ", ".join(mode.value for mode in EvaluationMode)
+            raise RuleLoadError(
+                f"rules[{index}].evaluation_mode must be one of: {allowed}"
+            ) from exc
 
         remediation = item.get("remediation")
         if remediation is not None and not isinstance(remediation, str):
@@ -80,7 +98,10 @@ def load_rules(path: str | Path) -> list[Rule]:
                 severity=severity,
                 description=_required_text(item, "description", index),
                 remediation=remediation.strip() if remediation else None,
-                references=tuple(reference.strip() for reference in references),
+                references=references,
+                tcc_parameters=tcc_parameters,
+                checklist_ids=checklist_ids,
+                evaluation_mode=evaluation_mode,
             )
         )
 
