@@ -14,9 +14,10 @@ dev = ["pytest>=8.0"]
 
 [project.scripts]
 android-kiosk-compare = "apk_analyzer.cli:main"
+android-kiosk-framework-audit = "framework_audit.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["apk_analyzer*", "adb_probe*", "core*"]
+include = ["apk_analyzer*", "adb_probe*", "core*", "framework_audit*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

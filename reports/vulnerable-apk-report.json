@@ -1,12 +1,12 @@
 {
   "schema_version": "static-apk-report-2.0",
-  "generated_at": "2026-11-23T00:03:33.112421+00:00",
+  "generated_at": "2026-11-24T02:05:00.595118+00:00",
   "analysis_mode": "reproducible_static_apk_no_adb_device",
   "target": {
     "name": "VulnerableKioskApp",
     "apk_path": "vulnerable-kiosk-app/app/build/outputs/apk/debug/app-debug.apk",
-    "sha256": "88dccd991a6b0e12f1f27ee975f339265068e673be1bcbb085354c47d7a3d812",
-    "size_bytes": 20605,
+    "sha256": "9581314667a964eb575a4da1c156ef7d4975023ef49ed7a0215328ff390f6ad8",
+    "size_bytes": 21067,
     "package_name": "com.example.vulnerablekiosk",
     "version_code": "1",
     "version_name": "1.0-lab",
@@ -38,43 +38,50 @@
         "type": "activity",
         "name": "com.example.vulnerablekiosk.MainActivity",
         "exported": true,
-        "has_intent_filter": true
+        "has_intent_filter": true,
+        "permission": null
       },
       {
         "type": "activity",
         "name": "com.example.vulnerablekiosk.AdminActivity",
         "exported": false,
-        "has_intent_filter": false
+        "has_intent_filter": false,
+        "permission": null
       },
       {
         "type": "activity",
         "name": "com.example.vulnerablekiosk.WebViewActivity",
         "exported": false,
-        "has_intent_filter": false
+        "has_intent_filter": false,
+        "permission": null
       },
       {
         "type": "activity",
         "name": "com.example.vulnerablekiosk.DiagnosticsActivity",
         "exported": false,
-        "has_intent_filter": false
+        "has_intent_filter": false,
+        "permission": null
       },
       {
         "type": "activity",
         "name": "com.example.vulnerablekiosk.NetworkDemoActivity",
         "exported": false,
-        "has_intent_filter": false
+        "has_intent_filter": false,
+        "permission": null
       },
       {
         "type": "activity",
         "name": "com.example.vulnerablekiosk.ExportedDebugActivity",
         "exported": true,
-        "has_intent_filter": true
+        "has_intent_filter": true,
+        "permission": null
       },
       {
         "type": "receiver",
         "name": "com.example.vulnerablekiosk.DebugReceiver",
         "exported": true,
-        "has_intent_filter": true
+        "has_intent_filter": true,
+        "permission": null
       }
     ]
   },
@@ -82,9 +89,7 @@
     "urls": [
       "http://10.0.2.2:8080/mock/login",
       "http://10.0.2.2:8080/mock/payment",
-      "http://10.0.2.2:8080/mock/status",
-      "http://example.com/insecure-api",
-      "http://test-kiosk-api.local/login"
+      "http://10.0.2.2:8080/mock/status"
     ],
     "credential_markers": [
       "api_key",
@@ -93,6 +98,14 @@
       "secret",
       "sessiontoken",
       "token"
+    ],
+    "credential_literals": [
+      "SECRET_TOKEN",
+      "TEST_API_KEY_123456",
+      "admin123",
+      "api_key_teste",
+      "fake-secret-token",
+      "fake-token-123"
     ]
   },
   "summary": {
@@ -100,8 +113,8 @@
     "finding_scope_note": "A contagem inclui somente regras implementadas pelo ApkAnalyzer atual; ausência de achados não comprova segurança completa.",
     "evaluation_status_counts": {
       "conforme": 0,
-      "nao_conforme": 1,
-      "nao_avaliado": 3,
+      "nao_conforme": 4,
+      "nao_avaliado": 1,
       "nao_aplicavel": 0
     }
   },
@@ -113,7 +126,8 @@
       "nao_aplicavel"
     ],
     "not_applicable_policy": "nao_aplicavel exige justificativa humana documentada e nunca é atribuído automaticamente.",
-    "severity_note": "A severidade é uma classificação inicial de triagem do catálogo, não uma pontuação universal de risco cientificamente validada."
+    "severity_note": "A severidade é uma classificação inicial de triagem do catálogo, não uma pontuação universal de risco cientificamente validada.",
+    "credential_scope_note": "APK-004 conclui apenas sobre os padrões de literais estáticos definidos; não detecta segredos ofuscados, montados dinamicamente ou recebidos remotamente."
   },
   "evaluations": [
     {
@@ -144,10 +158,10 @@
     },
     {
       "rule_id": "APK-003",
-      "status": "nao_avaliado",
-      "mode": "indicator",
+      "status": "nao_conforme",
+      "mode": "conclusive",
       "indicator_observed": true,
-      "rationale": "Um indicador foi observado, mas a conclusão exige evidência contextual.",
+      "rationale": "A regra implementada encontrou evidência direta de descumprimento do critério.",
       "tcc_parameters": [
         "P03"
       ],
@@ -157,15 +171,29 @@
     },
     {
       "rule_id": "KIOSK-002",
-      "status": "nao_avaliado",
-      "mode": "indicator",
+      "status": "nao_conforme",
+      "mode": "conclusive",
       "indicator_observed": true,
-      "rationale": "Um indicador foi observado, mas a conclusão exige evidência contextual.",
+      "rationale": "A regra implementada encontrou evidência direta de descumprimento do critério.",
       "tcc_parameters": [
         "P04"
       ],
       "checklist_ids": [
         "APP-05"
+      ]
+    },
+    {
+      "rule_id": "APK-004",
+      "status": "nao_conforme",
+      "mode": "conclusive",
+      "indicator_observed": true,
+      "rationale": "Um literal compatível com os padrões de credencial delimitados foi encontrado no DEX.",
+      "tcc_parameters": [
+        "P05"
+      ],
+      "checklist_ids": [
+        "APP-07",
+        "OPS-03"
       ]
     }
   ],

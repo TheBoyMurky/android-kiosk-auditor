@@ -25,6 +25,12 @@ IMPLEMENTED_RULE_IDS = (
 )
 
 COMPONENT_TAGS = ("activity", "activity-alias", "service", "receiver", "provider")
+PROTECTIVE_COMPONENT_PERMISSIONS = frozenset(
+    {
+        # Signature-level Android permission required by DeviceAdminReceiver.
+        "android.permission.BIND_DEVICE_ADMIN",
+    }
+)
 
 # Android platform permissions whose protection level includes "dangerous".
 # Grouped here deliberately so the decision remains deterministic and auditable.
@@ -88,6 +94,7 @@ class ApkAnalyzer:
             RULE_ALLOW_BACKUP,
             RULE_DANGEROUS_PERMISSION,
             RULE_EXPORTED_COMPONENT,
+            "APK-004",
         }
         missing = required.difference(self._rules)
         if missing:
@@ -233,12 +240,15 @@ class ApkAnalyzer:
     ) -> Iterable[ElementTree.Element]:
         for tag in COMPONENT_TAGS:
             for component in application.findall(tag):
+                permission = component.get(f"{ANDROID}permission")
                 exported = component.get(f"{ANDROID}exported")
                 explicitly_exported = exported is not None and exported.lower() == "true"
                 implicitly_exported = exported is None and component.find("intent-filter") is not None
                 if (
-                    explicitly_exported or implicitly_exported
-                ) and not ApkAnalyzer._is_launcher_activity(component):
+                    (explicitly_exported or implicitly_exported)
+                    and not ApkAnalyzer._is_launcher_activity(component)
+                    and permission not in PROTECTIVE_COMPONENT_PERMISSIONS
+                ):
                     yield component
 
     @staticmethod

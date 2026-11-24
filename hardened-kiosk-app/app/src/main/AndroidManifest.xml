@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Principio do menor privilegio: nenhuma permissao e solicitada porque
-         este app demonstrativo nao acessa rede, camera, localizacao, audio,
-         telefone ou armazenamento externo. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- INTERNET e uma permissao normal necessaria para a demonstracao HTTPS.
+         Nenhuma permissao perigosa e solicitada. -->
 
     <application
         android:allowBackup="false"
@@ -32,6 +33,20 @@
         <activity
             android:name=".NetworkDemoActivity"
             android:exported="false" />
+
+        <receiver
+            android:name=".KioskDeviceAdminReceiver"
+            android:description="@string/device_admin_description"
+            android:exported="true"
+            android:label="@string/device_admin_label"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_receiver" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 </manifest>

@@ -8,9 +8,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class NetworkDemoActivity extends Activity {
     private TextView result;
     private SecureApiClient apiClient;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,20 +33,20 @@ public class NetworkDemoActivity extends Activity {
         title.setGravity(Gravity.CENTER_HORIZONTAL);
 
         TextView description = new TextView(this);
-        description.setText("Chamadas HTTPS simuladas localmente, sem payload sensivel e com cleartext bloqueado.");
+        description.setText("Chamadas HTTPS reais para o servidor local, com certificado validado e cleartext bloqueado.");
         description.setPadding(0, 20, 0, 20);
 
-        Button loginButton = button("Executar Login Seguro Simulado");
-        loginButton.setOnClickListener(view -> show(apiClient.executeLoginSimulation()));
+        Button loginButton = button("Executar Login Seguro");
+        loginButton.setOnClickListener(view -> execute(apiClient::executeLogin));
 
-        Button paymentButton = button("Executar Pagamento Seguro Simulado");
-        paymentButton.setOnClickListener(view -> show(apiClient.executePaymentSimulation()));
+        Button paymentButton = button("Executar Pagamento Seguro");
+        paymentButton.setOnClickListener(view -> execute(apiClient::executePayment));
 
-        Button statusButton = button("Consultar Status Seguro Simulado");
-        statusButton.setOnClickListener(view -> show(apiClient.executeStatusSimulation()));
+        Button statusButton = button("Consultar Status Seguro");
+        statusButton.setOnClickListener(view -> execute(apiClient::executeStatus));
 
         result = new TextView(this);
-        result.setText("Aguardando simulacao segura.");
+        result.setText("Aguardando chamada HTTPS.");
         result.setPadding(0, 24, 0, 0);
 
         root.addView(title);
@@ -69,5 +73,23 @@ public class NetworkDemoActivity extends Activity {
 
     private void show(String message) {
         result.setText(message);
+    }
+
+    private void execute(NetworkCall call) {
+        show("Executando chamada HTTPS...");
+        executor.execute(() -> {
+            String message = call.run();
+            runOnUiThread(() -> show(message));
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        executor.shutdownNow();
+        super.onDestroy();
+    }
+
+    private interface NetworkCall {
+        String run();
     }
 }

@@ -8,9 +8,9 @@ refere à versão atual do repositório e não representa conformidade do termin
 |---|---|---|---|---|---|
 | P01 | Depuração do APK | APP-01 | APK-001 | Automática | Atributo `android:debuggable` do APK final e hash do artefato |
 | P02 | Backup | APP-02, DAT-05 | APK-002 | Parcial | `allowBackup`, regras de extração e teste conforme versão/fabricante |
-| P03 | Permissões | APP-04 | APK-003 | Parcial | Permissões declaradas e justificativa funcional de cada acesso |
-| P04 | Componentes exportados | APP-05 | KIOSK-002 | Parcial | Componentes exportados, proteção aplicada e teste de invocação |
-| P05 | Credenciais | APP-07, OPS-03 | Indicadores DEX e revisão manual | Parcial | Strings indicadoras, revisão de código e confirmação de validade/uso |
+| P03 | Permissões | APP-04 | APK-003 | Automática no perfil | Ausência de permissões perigosas; `INTERNET` normal permanece permitida |
+| P04 | Componentes exportados | APP-05 | KIOSK-002 | Automática no perfil | Nenhum componente interno exportado; launcher esperado é excluído da regra |
+| P05 | Credenciais | APP-07, OPS-03 | APK-004 e revisão complementar | Automática delimitada | Literais compatíveis com os padrões definidos; revisar ofuscação e valores dinâmicos |
 | P06 | Dados e logs | APP-10, DAT-01, DAT-04 | Revisão/teste manual | Manual | Arquivos, preferências, bancos, cache, Logcat, retenção e destinos |
 | P07 | Sessões | Sem item específico na planilha | Teste dinâmico | Não implementada | Estado antes/depois da troca, abandono e encerramento do atendimento |
 | P08 | Plataforma | KSK-06, KSK-07, OPS-02 | ADB Probe e verificação do fornecedor | Parcial | Versão, SDK, atualização, imagem, pacotes e situação de suporte |
@@ -34,6 +34,11 @@ refere à versão atual do repositório e não representa conformidade do termin
 Uma regra automática não transforma, sozinha, o parâmetro em “conforme” ou “não
 conforme”. Falha de coleta e ausência de achado devem ser registradas como “não
 avaliado” quando não houver evidência suficiente.
+
+No perfil de referência, P03 e P04 possuem critérios estáticos conclusivos. P05
+é conclusivo apenas para os padrões de literais estáticos documentados; a
+ausência de correspondência não exclui segredos ofuscados, construídos em
+execução ou recebidos remotamente.
 
 ## Estados de avaliação dos relatórios
 

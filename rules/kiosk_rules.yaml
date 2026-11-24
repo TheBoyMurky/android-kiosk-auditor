@@ -22,7 +22,7 @@ rules:
       - P04
     checklist_ids:
       - APP-05
-    evaluation_mode: indicator
+    evaluation_mode: conclusive
     references:
       - https://developer.android.com/guide/topics/manifest/activity-element#exported
 
@@ -61,6 +61,20 @@ rules:
       - P03
     checklist_ids:
       - APP-04
-    evaluation_mode: indicator
+    evaluation_mode: conclusive
     references:
       - https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions
+
+  - id: APK-004
+    title: Credential-like static literal is embedded in the APK
+    severity: high
+    description: The APK contains a static literal matching the delimited credential patterns used by this audit profile.
+    remediation: Remove embedded credentials and obtain short-lived secrets from an appropriately protected service at runtime.
+    tcc_parameters:
+      - P05
+    checklist_ids:
+      - APP-07
+      - OPS-03
+    evaluation_mode: conclusive
+    references:
+      - https://mas.owasp.org/MASTG/tests/android/MASVS-AUTH/MASTG-TEST-0001/

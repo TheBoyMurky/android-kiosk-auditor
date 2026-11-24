@@ -1,11 +1,11 @@
 # Relatório de comparação estática dos APKs
 
-Gerado em: 2026-11-23T00:03:33.117014+00:00
+Gerado em: 2026-11-24T02:05:00.600846+00:00
 
 ## Artefatos
 
-- VulnerableKioskApp: `vulnerable-kiosk-app/app/build/outputs/apk/debug/app-debug.apk` (`sha256: 88dccd991a6b0e12f1f27ee975f339265068e673be1bcbb085354c47d7a3d812`)
-- HardenedKioskApp: `hardened-kiosk-app/app/build/outputs/apk/debug/app-debug.apk` (`sha256: f09a7c36a8ba4aa49bbc84676ac779b45903db8878bb72fc80dbcd633b2c77dc`)
+- VulnerableKioskApp: `vulnerable-kiosk-app/app/build/outputs/apk/debug/app-debug.apk` (`sha256: 9581314667a964eb575a4da1c156ef7d4975023ef49ed7a0215328ff390f6ad8`)
+- HardenedKioskApp: `hardened-kiosk-app/app/build/outputs/apk/debug/app-debug.apk` (`sha256: 517d50c0d63bfeefc5fb1cf2815f87687d58b7e2af6e36b07343d2c80c44a833`)
 
 ## Relatórios
 
@@ -24,8 +24,8 @@ integralmente seguros.
 
 ## Estados de avaliação
 
-- VulnerableKioskApp: `{"conforme": 0, "nao_conforme": 1, "nao_avaliado": 3, "nao_aplicavel": 0}`
-- HardenedKioskApp: `{"conforme": 1, "nao_conforme": 0, "nao_avaliado": 3, "nao_aplicavel": 0}`
+- VulnerableKioskApp: `{"conforme": 0, "nao_conforme": 4, "nao_avaliado": 1, "nao_aplicavel": 0}`
+- HardenedKioskApp: `{"conforme": 4, "nao_conforme": 0, "nao_avaliado": 1, "nao_aplicavel": 0}`
 
 Somente regras conclusivas podem atribuir `conforme` automaticamente. Regras
 indicativas permanecem `nao_avaliado` até a revisão das evidências contextuais.

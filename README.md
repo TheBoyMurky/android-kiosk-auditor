@@ -15,8 +15,8 @@ análise básica do `AndroidManifest.xml` contido em APKs.
   acadêmicos da análise estática de APK e da coleta via ADB.
 - `hardened-kiosk-app`: app Android demonstrativo com hardening básico para
   comparação acadêmica com o alvo vulnerável.
-- `mock-server`: servidor Flask local em HTTP para demonstrar comunicação
-  insegura controlada no `VulnerableKioskApp`.
+- `mock-server`: servidor Flask local em HTTP para o cenário vulnerável e HTTPS
+  com certificado de laboratório para o cenário endurecido.
 
 A matriz [`docs/tcc-traceability.md`](docs/tcc-traceability.md) relaciona os
 parâmetros P01-P16, os IDs da planilha, as regras implementadas e as evidências
@@ -25,10 +25,25 @@ manuais ainda necessárias.
 Os requisitos de JDK/Android SDK e o procedimento de compilação estão em
 [`docs/android-build.md`](docs/android-build.md).
 
-O roteiro curto para apresentação e perguntas previsíveis da banca está em
+O roteiro completo da defesa, incluindo preparação, sequência ao vivo,
+interpretação dos resultados e contingência, está em
 [`docs/defense-demo.md`](docs/defense-demo.md).
 
+A criação do AVD oficial acelerado por KVM e a preparação do snapshot estão em
+[`docs/avd-demo.md`](docs/avd-demo.md).
+
 ## Uso rápido
+
+Para criar, completar e ativar o ambiente Python no terminal atual:
+
+```bash
+source scripts/activate_venv.sh
+```
+
+O script cria `.venv` quando necessário e instala as dependências de
+desenvolvimento somente quando elas ainda não estão disponíveis.
+
+O procedimento equivalente, executado manualmente, é:
 
 ```bash
 python -m venv .venv
@@ -52,6 +67,42 @@ Para executar testes, builds, geração de evidências e validação dos JSONs e
 ```bash
 ./scripts/validate_project.sh
 ```
+
+## Auditoria combinada do framework
+
+Com um emulador ou dispositivo autorizado conectado por ADB, execute:
+
+```bash
+export TCC_DEVICE=emulator-5556
+./scripts/run_framework_audit.sh
+```
+
+O comando combina os relatórios dos APKs, a coleta somente leitura do Android e
+um registro P01-P16 em `reports/framework-audit/`. Parâmetros que exigem contexto,
+teste dinâmico, inspeção física ou processo operacional permanecem
+`nao_avaliado` e recebem uma indicação da próxima evidência necessária.
+
+O formato completo das saídas está documentado em
+[`docs/framework-audit.md`](docs/framework-audit.md).
+
+## Demonstração da defesa
+
+Para preparar o ambiente visual completo pela primeira vez:
+
+```bash
+export ANDROID_HOME=/media/murky/HD/Android/Sdk
+export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+source scripts/activate_venv.sh
+./scripts/create_tcc_avd.sh
+./scripts/prepare_tcc_avd_demo.sh --rebuild
+TCC_DEVICE=emulator-5556 ./scripts/provision_tcc_device_owner.sh
+TCC_DEVICE=emulator-5556 ./scripts/run_framework_audit.sh
+```
+
+O provisionamento como Device Owner deve ser realizado somente no AVD acadêmico
+limpo. Depois dele, salve o snapshot `TCC-pronto`. Na defesa, restaure esse
+snapshot, apresente os dois aplicativos e execute novamente apenas a auditoria
+combinada. Siga a ordem em [`docs/defense-demo.md`](docs/defense-demo.md).
 
 ## Análise de APK
 
@@ -102,8 +153,10 @@ Cada controle executado também recebe um estado de avaliação:
 - `nao_aplicavel`: somente pode ser atribuído manualmente, com justificativa.
 
 Regras classificadas como indicadores permanecem `nao_avaliado`, com ou sem
-ocorrência detectada. A severidade é apenas uma prioridade inicial de triagem e
-não constitui uma pontuação universal ou cientificamente validada de risco.
+ocorrência detectada. P03 e P04 são conclusivos dentro do perfil estático de
+referência. P05 é conclusivo somente para os padrões de literais definidos e
+não exclui segredos ofuscados ou dinâmicos. A severidade é apenas uma prioridade
+inicial de triagem e não constitui uma pontuação universal validada de risco.
 
 ## Coleta por ADB
 

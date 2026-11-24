@@ -44,6 +44,12 @@ HARDENED_MANIFEST = """<?xml version="1.0" encoding="utf-8"?>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".KioskDeviceAdminReceiver" android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
 """
@@ -61,7 +67,7 @@ def test_reproducible_comparison_contains_hashes_and_scope(tmp_path):
     _write_apk(
         vulnerable_apk,
         VULNERABLE_MANIFEST,
-        b"header http://10.0.2.2/mock password api_key footer",
+        b"header http://10.0.2.2/mock password api_key admin123 footer",
     )
     _write_apk(
         hardened_apk,
@@ -90,6 +96,7 @@ def test_reproducible_comparison_contains_hashes_and_scope(tmp_path):
         "api_key",
         "password",
     ]
+    assert vulnerable["dex_indicators"]["credential_literals"] == ["admin123"]
     assert hardened["summary"]["finding_count"] == 0
     vulnerable_evaluations = {
         item["rule_id"]: item for item in vulnerable["evaluations"]
@@ -101,11 +108,16 @@ def test_reproducible_comparison_contains_hashes_and_scope(tmp_path):
     assert vulnerable_evaluations["APK-002"]["status"] == "nao_avaliado"
     assert vulnerable_evaluations["APK-002"]["indicator_observed"] is True
     assert hardened_evaluations["APK-001"]["status"] == "conforme"
-    assert hardened_evaluations["KIOSK-002"]["status"] == "nao_avaliado"
+    assert vulnerable_evaluations["APK-003"]["status"] == "nao_conforme"
+    assert vulnerable_evaluations["KIOSK-002"]["status"] == "nao_conforme"
+    assert vulnerable_evaluations["APK-004"]["status"] == "nao_conforme"
+    assert hardened_evaluations["APK-003"]["status"] == "conforme"
+    assert hardened_evaluations["KIOSK-002"]["status"] == "conforme"
+    assert hardened_evaluations["APK-004"]["status"] == "conforme"
     assert hardened["summary"]["evaluation_status_counts"] == {
-        "conforme": 1,
+        "conforme": 4,
         "nao_conforme": 0,
-        "nao_avaliado": 3,
+        "nao_avaliado": 1,
         "nao_aplicavel": 0,
     }
     assert comparison["comparison"]["cleartext_configuration"] == {

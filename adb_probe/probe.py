@@ -17,12 +17,15 @@ class AdbSnapshot:
     serial: str | None
     android_version: str
     android_sdk: str
+    security_patch: str
+    build_fingerprint: str
     ro_debuggable: str
     ro_secure: str
     ro_adb_secure: str
     adb_enabled: bool | None
     installed_packages: tuple[str, ...]
     device_policy: str
+    activity_state: str
 
     def to_dict(self) -> dict:
         data = asdict(self)
@@ -60,6 +63,8 @@ class AdbProbe:
             serial=self.serial,
             android_version=self._getprop("ro.build.version.release"),
             android_sdk=self._getprop("ro.build.version.sdk"),
+            security_patch=self._getprop("ro.build.version.security_patch"),
+            build_fingerprint=self._getprop("ro.build.fingerprint"),
             ro_debuggable=self._getprop("ro.debuggable"),
             ro_secure=self._getprop("ro.secure"),
             ro_adb_secure=self._getprop("ro.adb.secure"),
@@ -70,6 +75,7 @@ class AdbProbe:
                 self._shell("pm", "list", "packages")
             ),
             device_policy=self._shell("dumpsys", "device_policy"),
+            activity_state=self._shell("dumpsys", "activity", "activities"),
         )
 
     def _getprop(self, name: str) -> str:

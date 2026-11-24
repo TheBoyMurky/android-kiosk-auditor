@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
@@ -73,7 +74,10 @@ public class MainActivity extends Activity {
         root.addView(kioskButton);
         root.addView(leaveKioskButton);
 
-        setContentView(root);
+        ScrollView scrollView = new ScrollView(this);
+        scrollView.setFillViewport(true);
+        scrollView.addView(root);
+        setContentView(scrollView);
         SafeLogger.info(TAG, "Tela principal iniciada.");
     }
 

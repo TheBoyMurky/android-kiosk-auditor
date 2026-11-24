@@ -12,7 +12,13 @@ from zipfile import BadZipFile, ZipFile
 
 from core import ControlEvaluation, EvaluationMode, EvaluationStatus
 
-from .analyzer import ANDROID, IMPLEMENTED_RULE_IDS, ApkAnalysisError, ApkAnalyzer
+from .analyzer import (
+    ANDROID,
+    IMPLEMENTED_RULE_IDS,
+    PROTECTIVE_COMPONENT_PERMISSIONS,
+    ApkAnalysisError,
+    ApkAnalyzer,
+)
 
 
 URL_PATTERN = re.compile(rb"https?://[^\x00-\x20\x7f\"'<>]{3,}", re.IGNORECASE)
@@ -24,6 +30,12 @@ CREDENTIAL_MARKERS = (
     b"sessiontoken",
     b"token",
 )
+CREDENTIAL_LITERAL_PATTERNS = (
+    re.compile(rb"\badmin[0-9]{3,}\b", re.IGNORECASE),
+    re.compile(rb"\b(?:test[_-])?api[_-]?key[_-]?[a-z0-9_-]{6,}\b", re.IGNORECASE),
+    re.compile(rb"\b(?:fake[_-])?(?:secret|token)[a-z0-9_-]{4,}\b", re.IGNORECASE),
+)
+DEX_CREDENTIAL_RULE_ID = "APK-004"
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,6 +75,7 @@ def _sha256(path: Path) -> str:
 def _dex_indicators(path: Path) -> dict[str, list[str]]:
     urls: set[str] = set()
     markers: set[str] = set()
+    credential_literals: set[str] = set()
     try:
         with ZipFile(path) as archive:
             dex_names = sorted(
@@ -81,9 +94,18 @@ def _dex_indicators(path: Path) -> dict[str, list[str]]:
                     for marker in CREDENTIAL_MARKERS
                     if marker in lowered
                 )
+                for pattern in CREDENTIAL_LITERAL_PATTERNS:
+                    credential_literals.update(
+                        match.group(0).decode("utf-8", errors="replace")
+                        for match in pattern.finditer(payload)
+                    )
     except (BadZipFile, OSError, KeyError) as exc:
         raise ApkAnalysisError(f"could not inspect DEX strings in {path}: {exc}") from exc
-    return {"urls": sorted(urls), "credential_markers": sorted(markers)}
+    return {
+        "urls": sorted(urls),
+        "credential_markers": sorted(markers),
+        "credential_literals": sorted(credential_literals),
+    }
 
 
 def analyze_target(
@@ -101,21 +123,33 @@ def analyze_target(
         rule_id: [finding for finding in findings if finding.rule_id == rule_id]
         for rule_id in IMPLEMENTED_RULE_IDS
     }
+    indicators = _dex_indicators(path)
     evaluations = []
-    for rule_id in IMPLEMENTED_RULE_IDS:
+    for rule_id in (*IMPLEMENTED_RULE_IDS, DEX_CREDENTIAL_RULE_ID):
         rule = analyzer.get_rule(rule_id)
-        observed = bool(findings_by_rule[rule_id])
+        observed = (
+            bool(indicators["credential_literals"])
+            if rule_id == DEX_CREDENTIAL_RULE_ID
+            else bool(findings_by_rule[rule_id])
+        )
         if rule.evaluation_mode is EvaluationMode.CONCLUSIVE:
             status = (
                 EvaluationStatus.NAO_CONFORME
                 if observed
                 else EvaluationStatus.CONFORME
             )
-            rationale = (
-                "A regra implementada encontrou evidência direta de descumprimento do critério."
-                if observed
-                else "A regra implementada encontrou evidência direta de atendimento do critério."
-            )
+            if rule_id == DEX_CREDENTIAL_RULE_ID:
+                rationale = (
+                    "Um literal compatível com os padrões de credencial delimitados foi encontrado no DEX."
+                    if observed
+                    else "Nenhum literal compatível com os padrões de credencial delimitados foi encontrado no DEX."
+                )
+            else:
+                rationale = (
+                    "A regra implementada encontrou evidência direta de descumprimento do critério."
+                    if observed
+                    else "A regra implementada encontrou evidência direta de atendimento do critério."
+                )
         else:
             status = EvaluationStatus.NAO_AVALIADO
             rationale = (
@@ -155,11 +189,11 @@ def analyze_target(
                     "name": component.get(f"{ANDROID}name", "<unnamed>"),
                     "exported": _android_bool(component, "exported"),
                     "has_intent_filter": component.find("intent-filter") is not None,
+                    "permission": component.get(f"{ANDROID}permission"),
                 }
             )
 
     uses_sdk = manifest.find("uses-sdk")
-    indicators = _dex_indicators(path)
     return {
         "schema_version": "static-apk-report-2.0",
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -212,6 +246,10 @@ def analyze_target(
                 "A severidade é uma classificação inicial de triagem do catálogo, "
                 "não uma pontuação universal de risco cientificamente validada."
             ),
+            "credential_scope_note": (
+                "APK-004 conclui apenas sobre os padrões de literais estáticos definidos; "
+                "não detecta segredos ofuscados, montados dinamicamente ou recebidos remotamente."
+            ),
         },
         "evaluations": [evaluation.to_dict() for evaluation in evaluations],
         "findings": [finding.to_dict() for finding in findings],
@@ -224,7 +262,8 @@ def build_comparison(vulnerable: dict, hardened: dict) -> dict:
         for component in report["manifest_summary"]["components"]:
             name = component["name"]
             is_launcher = name.endswith(".MainActivity") or name == ".MainActivity"
-            if component["exported"] is True and not is_launcher:
+            is_protected = component.get("permission") in PROTECTIVE_COMPONENT_PERMISSIONS
+            if component["exported"] is True and not is_launcher and not is_protected:
                 result.append(component)
         return result
 

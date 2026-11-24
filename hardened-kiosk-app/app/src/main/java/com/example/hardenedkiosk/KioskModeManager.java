@@ -3,6 +3,7 @@ package com.example.hardenedkiosk;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.Build;
 
@@ -34,6 +35,11 @@ public final class KioskModeManager {
 
         try {
             String packageName = activity.getPackageName();
+            ComponentName admin = new ComponentName(activity, KioskDeviceAdminReceiver.class);
+            if (devicePolicyManager != null
+                    && devicePolicyManager.isDeviceOwnerApp(packageName)) {
+                devicePolicyManager.setLockTaskPackages(admin, new String[]{packageName});
+            }
             boolean permitted = devicePolicyManager != null
                     && devicePolicyManager.isLockTaskPermitted(packageName);
             if (!permitted) {

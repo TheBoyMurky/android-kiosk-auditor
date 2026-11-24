@@ -66,6 +66,11 @@ sem criptografia. Isso e proposital para permitir deteccao estatica e via ADB.
 O analisador deve conseguir encontrar:
 
 - URLs `http://10.0.2.2:8080/...` no APK.
+
+O botão `Iniciar Atendimento` abre
+`http://10.0.2.2:8080/mock/login` na WebView. No Android Emulator,
+`10.0.2.2` representa o computador hospedeiro; `localhost` representaria o
+próprio Android virtual.
 - `android:usesCleartextTraffic="true"`.
 - Permissao `android.permission.INTERNET`.
 - Strings ficticias `admin123`, `fake-token-123` e `TEST_API_KEY_123456`.

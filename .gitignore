@@ -20,6 +20,7 @@ reports/*.html
 !reports/vulnerable-apk-report.json
 !reports/hardened-apk-report.json
 !reports/apk-comparison-report.json
+reports/framework-audit/
 
 # Android / Gradle build artifacts
 .gradle/
@@ -45,3 +46,7 @@ local.properties
 Thumbs.db
 *.swp
 *.swo
+
+# Local Android Emulator process files
+.tcc-emulator.log
+.tcc-emulator.pid

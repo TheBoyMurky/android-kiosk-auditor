@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">HardenedKioskApp</string>
+    <string name="device_admin_label">Administrador do kiosk demonstrativo</string>
+    <string name="device_admin_description">Permite demonstrar Lock Task Mode no AVD acadêmico.</string>
 </resources>
