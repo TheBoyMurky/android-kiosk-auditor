@@ -32,6 +32,13 @@ interpretação dos resultados e contingência, está em
 A criação do AVD oficial acelerado por KVM e a preparação do snapshot estão em
 [`docs/avd-demo.md`](docs/avd-demo.md).
 
+Para preparar outra máquina Linux Mint desde uma instalação limpa, consulte
+[`docs/linux-mint-setup.md`](docs/linux-mint-setup.md) ou execute:
+
+```bash
+./scripts/setup_linux_mint.sh
+```
+
 ## Uso rápido
 
 Para criar, completar e ativar o ambiente Python no terminal atual:
